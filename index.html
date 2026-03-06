@@ -3,129 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHIKHA: THE COSMIC ORIGIN</title>
+    <title>SHIKHA BHABHI | THE ETERNAL CELEBRATION</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Playfair+Display:ital,wght@1,900&display=swap');
 
-        body, html {
-            margin: 0; padding: 0;
-            width: 100%; height: 100%;
-            background: #000;
-            overflow: hidden;
-            font-family: 'Syncopate', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #000; overflow: hidden; font-family: 'Syncopate', sans-serif; cursor: crosshair; }
 
-        canvas {
-            display: block;
-            filter: blur(1px) contrast(1.2);
-        }
+        canvas { display: block; position: absolute; top: 0; left: 0; }
 
-        #ui-overlay {
+        #interface {
             position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            width: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            pointer-events: none;
             z-index: 10;
-        }
-
-        .main-title {
-            font-size: clamp(2rem, 15vw, 10rem);
-            color: transparent;
-            -webkit-text-stroke: 1px rgba(255, 255, 255, 0.4);
-            letter-spacing: 20px;
-            text-transform: uppercase;
-            transition: 0.5s;
-        }
-
-        .main-title:hover {
-            -webkit-text-stroke: 1px #fff;
-            filter: drop-shadow(0 0 30px #fff);
-        }
-
-        .data-stream {
-            position: absolute;
-            bottom: 40px;
-            left: 40px;
-            color: #444;
-            font-size: 10px;
-            letter-spacing: 2px;
-            line-height: 2;
-        }
-
-        /* Ambient Glow */
-        .glow-sphere {
-            position: absolute;
-            width: 600px; height: 600px;
-            background: radial-gradient(circle, rgba(100,0,255,0.15) 0%, transparent 70%);
-            border-radius: 50%;
             pointer-events: none;
+            color: white;
+            text-align: center;
+        }
+
+        .bhabhi-title {
+            font-size: 12vw;
+            letter-spacing: 30px;
+            color: transparent;
+            -webkit-text-stroke: 1px rgba(255, 215, 0, 0.5);
+            text-transform: uppercase;
+            animation: floatText 5s ease-in-out infinite;
+        }
+
+        .wish-box {
+            margin-top: -20px;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 2s cubic-bezier(0.19, 1, 0.22, 1);
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            padding: 40px;
+            border-radius: 2px;
+            border-left: 5px solid #D4AF37;
+        }
+
+        .wish-box.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        h2 { font-family: 'Playfair Display', serif; font-size: 2.5rem; color: #D4AF37; margin-bottom: 10px; }
+        p { letter-spacing: 4px; font-size: 0.9rem; color: #aaa; line-height: 2; }
+
+        @keyframes floatText {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.02); }
+        }
+
+        .footer-info {
+            position: absolute;
+            bottom: 20px;
+            font-size: 10px;
+            letter-spacing: 5px;
+            color: rgba(212, 175, 55, 0.4);
         }
     </style>
 </head>
 <body>
 
-    <div id="ui-overlay">
-        <h1 class="main-title">SHIKHA</h1>
-        <div class="data-stream">
-            SYSTEM_STATUS: CELEBRATING_LIFE<br>
-            COORDINATES: INFINITE_JOY<br>
-            VERSION: BEYOND_HUMAN_1.0
+    <canvas id="world"></canvas>
+
+    <div id="interface">
+        <h1 class="bhabhi-title">SHIKHA</h1>
+        <div class="wish-box" id="message">
+            <h2>Happy Birthday Bhabhi</h2>
+            <p>YOU ARE THE HEART OF OUR GALAXY.<br>MAY YOUR LIGHT NEVER FADE.</p>
         </div>
+        <div class="footer-info">QUANTUM CELEBRATION INITIALIZED // MARCH 2026</div>
     </div>
-    <div class="glow-sphere" id="cursor-glow"></div>
-    <canvas id="canvas1"></canvas>
 
     <script>
-        const canvas = document.getElementById('canvas1');
+        const canvas = document.getElementById('world');
         const ctx = canvas.getContext('2d');
-        const glow = document.getElementById('cursor-glow');
+        let particles = [];
+        
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        let particlesArray = [];
-        const numberOfParticles = 150;
-
-        const mouse = { x: null, y: null };
-
+        const mouse = { x: -100, y: -100 };
         window.addEventListener('mousemove', (e) => {
             mouse.x = e.x;
             mouse.y = e.y;
-            glow.style.left = e.x - 300 + 'px';
-            glow.style.top = e.y - 300 + 'px';
+            // Reveal message when she moves mouse
+            document.getElementById('message').classList.add('visible');
         });
 
         class Particle {
             constructor() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 5 + 1;
-                this.speedX = Math.random() * 3 - 1.5;
-                this.speedY = Math.random() * 3 - 1.5;
-                this.color = 'rgba(255, 255, 255, 0.8)';
+                this.baseX = this.x;
+                this.baseY = this.y;
+                this.size = Math.random() * 2 + 0.5;
+                this.angle = Math.random() * Math.PI * 2;
+                this.velocity = Math.random() * 0.02;
+                this.distance = Math.random() * 200 + 100;
+                this.color = Math.random() > 0.5 ? '#D4AF37' : '#ffffff';
             }
+
             update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
+                // Circular Orbit Logic (Non-human movement)
+                this.angle += this.velocity;
+                let orbitX = Math.cos(this.angle) * this.distance;
+                let orbitY = Math.sin(this.angle) * this.distance;
 
-                // Infinite loop wrap around
-                if (this.x > canvas.width) this.x = 0;
-                else if (this.x < 0) this.x = canvas.width;
-                if (this.y > canvas.height) this.y = 0;
-                else if (this.y < 0) this.y = canvas.height;
-
-                // Interaction with mouse
                 let dx = mouse.x - this.x;
                 let dy = mouse.y - this.y;
-                let distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < 150) {
-                    this.x -= dx / 10;
-                    this.y -= dy / 10;
+                let dist = Math.sqrt(dx*dx + dy*dy);
+
+                if (dist < 150) {
+                    this.x -= dx / 5;
+                    this.y -= dy / 5;
+                } else {
+                    this.x += ( (canvas.width/2 + orbitX) - this.x) * 0.05;
+                    this.y += ( (canvas.height/2 + orbitY) - this.y) * 0.05;
                 }
             }
+
             draw() {
                 ctx.fillStyle = this.color;
                 ctx.beginPath();
@@ -135,41 +139,38 @@
         }
 
         function init() {
-            for (let i = 0; i < numberOfParticles; i++) {
-                particlesArray.push(new Particle());
+            for (let i = 0; i < 400; i++) {
+                particles.push(new Particle());
             }
         }
 
         function animate() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)'; // Ghosting effect
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            for (let i = 0; i < particlesArray.length; i++) {
-                particlesArray[i].update();
-                particlesArray[i].draw();
-            }
-            connect();
-            requestAnimationFrame(animate);
-        }
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
 
-        function connect() {
-            for (let a = 0; a < particlesArray.length; a++) {
-                for (let b = a; b < particlesArray.length; b++) {
-                    let dx = particlesArray[a].x - particlesArray[b].x;
-                    let dy = particlesArray[a].y - particlesArray[b].y;
-                    let distance = Math.sqrt(dx * dx + dy * dy);
+            // Drawing the "Neural Web"
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i; j < particles.length; j++) {
+                    let dx = particles[i].x - particles[j].x;
+                    let dy = particles[i].y - particles[j].y;
+                    let dist = Math.sqrt(dx*dx + dy*dy);
 
-                    if (distance < 150) {
-                        let opacity = 1 - (distance / 150);
-                        ctx.strokeStyle = `rgba(255, 255, 255, ${opacity * 0.3})`;
-                        ctx.lineWidth = 1;
+                    if (dist < 80) {
+                        ctx.strokeStyle = `rgba(212, 175, 55, ${1 - dist/80 * 0.2})`;
+                        ctx.lineWidth = 0.5;
                         ctx.beginPath();
-                        ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
-                        ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
                         ctx.stroke();
                     }
                 }
             }
+            requestAnimationFrame(animate);
         }
 
         init();
@@ -178,7 +179,7 @@
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            particlesArray = [];
+            particles = [];
             init();
         });
     </script>
