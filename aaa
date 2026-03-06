@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Shikha Bhabhi</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Playfair+Display:ital,wght@1,600;1,900&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #050505; overflow: hidden; font-family: 'Playfair Display', serif; }
+
+        /* Background Canvas */
+        canvas { display: block; position: absolute; top: 0; left: 0; z-index: 1; }
+
+        /* Text Container */
+        #content {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            text-align: center;
+            pointer-events: none; /* Background effects ke liye */
+            padding: 20px;
+        }
+
+        /* Birthday Card Design - Ab yeh hamesha show hoga */
+        .wish-container {
+            background: rgba(20, 20, 20, 0.7);
+            backdrop-filter: blur(15px);
+            border: 2px solid #D4AF37;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 0 50px rgba(212, 175, 55, 0.2);
+            animation: fadeInLoad 2s ease-in-out forwards;
+            max-width: 800px;
+            width: 90%;
+        }
+
+        @keyframes fadeInLoad {
+            0% { opacity: 0; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        h1 {
+            font-family: 'Syncopate', sans-serif;
+            font-size: clamp(3rem, 8vw, 6rem);
+            color: #D4AF37;
+            letter-spacing: 15px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            color: #fff;
+            margin-bottom: 25px;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+
+        p {
+            font-size: 1.4rem;
+            color: #e0e0e0;
+            line-height: 1.8;
+            font-style: italic;
+        }
+
+        .highlight {
+            color: #D4AF37;
+            font-weight: 900;
+            font-size: 1.6rem;
+            display: block;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="world"></canvas>
+
+    <div id="content">
+        <div class="wish-container">
+            <h1>SHIKHA</h1>
+            <h2>Happy Birthday, Bhabhi! ✨</h2>
+            <p>
+                Aapki muskurahat se roshan hai yeh aangan,<br>
+                Khushiyon se bhara rahe aapka har ek pal aur jeevan.<br><br>
+                Duniya ki sabse best Bhabhi ko janamdin ki dher saari badhai!<br>
+                <span class="highlight">Have a magical day!</span>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('world');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particles = [];
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2;
+                this.speedX = Math.random() * 1 - 0.5;
+                this.speedY = Math.random() * 1 - 0.5;
+                this.color = Math.random() > 0.5 ? '#D4AF37' : '#ffffff';
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            particles = [];
+            for (let i = 0; i < 150; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+            }
+            // Connect particles
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i; j < particles.length; j++) {
+                    let dx = particles[i].x - particles[j].x;
+                    let dy = particles[i].y - particles[j].y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < 100) {
+                        ctx.strokeStyle = `rgba(212, 175, 55, ${1 - distance/100 * 0.5})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        init();
+        animate();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            init();
+        });
+    </script>
+</body>
+</html>
